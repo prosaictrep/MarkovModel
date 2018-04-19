@@ -1,9 +1,6 @@
 
 
 /*************************************************************************
- * Name: 
- * NetID: 
- * Precept: 
  *
  * Description: Uses a Markov chain to create a statistical model of input text.
  *************************************************************************/
@@ -25,50 +22,42 @@ public class MarkovModel {
          
          StringBuilder stringBuffer = new StringBuilder();
            String kgrams = ""; 
-   int number = 0;
-    String substring = "";
-    
+    // String substring = "";
+
    // Fills the buffer with the first k characters of the text, where k is
     // 'Window' that looks at k number of text at a time.
-    if (order < text.length()) {
+    if (order <= text.length()) {
     for (int i = 0; i < order - 1; i++) {
       stringBuffer.append(text.charAt(i));
     }
     }
-    text += stringBuffer.toString();
+    String newText = text + stringBuffer.toString();
     
-    for (int i = 0; i < text.length() - 1; i++) {
-         kgrams = text.substring(i, i + order);
-         symbol.put(kgrams, number);
-         if (symbol.contains(kgrams)) {
-                int j = symbol.get(kgrams);
-                j++;
-                symbol.put(kgrams, j);
+    for (int i = 0; i < newText.length(); i++) {
+     if (i + order <= newText.length()) {
+         kgrams = newText.substring(i, i + order);
+         if (!symbol.contains(kgrams)) {
+             symbol.put(kgrams, 1);
+         }
+            else {
+                symbol.put(kgrams, symbol.get(kgrams) + 1);
+            }
             }
     }
-    /*
-    for (int i = 0; i < text.length() - 1; i++) {
-          
-         substring = text.substring(i, i + order);
-                 if (symbol.contains(substring)) {
-                     number++;
-                 }
-                 symbol.put(kgrams, number);
-    }  */
-
+    
     int[] asciiArray = new int[ASCII];
-       array.put(kgrams, asciiArray);
+    array.put(kgrams, asciiArray);
     
     char[] hello = new char[order];
     char next = 0;
-    for (int i = 0; i < text.length() - order; i++) {
+    for (int i = 0; i < newText.length() - order; i++) {
      
      // 'Window' that looks at k number of text at a time.
      for (int j = 0; j < order; j++) {
-      hello[j] = text.charAt(i + j);
+      hello[j] = newText.charAt(i + j);
       
       // Single char immediately after the 'window'
-      next = text.charAt(i + j + 1); 
+      next = newText.charAt(i + j + 1); 
      }
 
      String entry = String.valueOf(hello);
@@ -125,18 +114,19 @@ public class MarkovModel {
     // returns the number of times the specified kgram appears in the text
     public int freq(String kgram) {
         // Error check
-  if (kgram.length() != order) {
+        if (kgram.length() != order) {
    throw new IllegalArgumentException("Length of string kgram must be equal to order.");
   }
-
+        
   // Retrieve the array of the specified character sequence in string form
-  if (symbol.get(kgram) == 0) {
-  return 0;
-  }
+  
 
-  // If the hashmap retrieves nothing, means the specified string does not
+  // If the retrieves nothing, means the specified string does not
   // appear in the text
-      return symbol.get(kgram);
+        if (!symbol.contains(kgram))
+      return 0;
+        
+        return symbol.get(kgram);
       }
 
     // returns the number of times the character c follows the specified
@@ -144,21 +134,20 @@ public class MarkovModel {
      public int freq(String kgram, char c) {
          // For error
          if (kgram.length() != order) {
-             throw new IllegalArgumentException
-                 ("Length of kgram must equal order.");
+             throw new IllegalArgumentException ("Length of kgram does not equal order.");
          }
      // Retrieves the array of the specified character sequence in string form
-   int[] asciiArray = array.get(kgram);
+         int[] asciiArray = new int[ASCII];
 
    // If the hashmap retrieves nothing, means the specified string does not
    // appear in the text
    for (int i = 0; i < asciiArray.length; i++) {
-   if (asciiArray[i] == 0) {
-    return 0;
-   }
-   }
+       asciiArray = array.get(kgram);
+   if (asciiArray[i] != 0) {
    return asciiArray[c];
-  
+   }
+   }
+  return 0;
      }
 
     // returns a random character that follows the specified kgram in the text,
