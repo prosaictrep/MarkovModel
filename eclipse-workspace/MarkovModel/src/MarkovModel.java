@@ -5,7 +5,7 @@
  * NetID: 
  * Precept: 
  *
- * Description: Uses a Markov chian to create a statistical model of input text.
+ * Description: Uses a Markov chain to create a statistical model of input text.
  *************************************************************************/
 
 public class MarkovModel {
